@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nadi MUA</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Golos+Text:wght@400;500;600&display=swap">
+<style>
+/* Layout: beauty-magazine spread — powder-pink paper, aubergine ink, a single rouge brush-swash drawn under the headline; prices set like a magazine menu with italic notes */
+:root{
+  --bg:#f7ecea; --paper:#fffaf8; --fg:#2b1626; --muted:#7a5f6e; --line:#e6d0cf;
+  --rouge:#b8325a; --rouge-ink:#ffffff; --blush:#efc3c5;
+  --display:"Playfair Display","Georgia",serif;
+  --body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1c1219; --paper:#251821; --fg:#f6e8ec; --muted:#c3a7b5; --line:#3d2a36;
+  --rouge:#e0617f; --rouge-ink:#1c1219; --blush:#6b3a4c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c1219; --paper:#251821; --fg:#f6e8ec; --muted:#c3a7b5; --line:#3d2a36;
+  --rouge:#e0617f; --rouge-ink:#1c1219; --blush:#6b3a4c; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;line-height:1.05;text-wrap:balance}
+h2{font-size:clamp(2.1rem,5vw,3.2rem)}
+p{margin:0}
+a{color:inherit}
+.label{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--rouge);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--rouge);color:var(--rouge-ink);font-weight:600;text-decoration:none;padding:15px 30px;border-radius:999px;transition:transform .2s ease,filter .2s ease}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--fg)}
+:focus-visible{outline:2px solid var(--rouge);outline-offset:3px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-style:italic;font-size:1.5rem;text-decoration:none}
+nav{display:flex;gap:24px;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--muted);font-size:.93rem}
+nav a:hover{color:var(--fg)}
+
+.hero .wrap{padding-block:72px 64px;display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:22px;min-width:0}
+.hero h1{font-size:clamp(3rem,8vw,5.6rem)}
+.swash{position:relative;display:inline-block;font-style:italic;font-weight:500;color:var(--rouge)}
+.swash svg{position:absolute;left:-4%;bottom:-.18em;width:108%;height:.5em;overflow:visible}
+.hero .lead{color:var(--muted);font-size:1.12rem;max-width:42ch}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.card-id{background:var(--paper);border:1px solid var(--line);border-radius:28px 28px 4px 28px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.card-id .big{font-family:var(--display);font-size:2.1rem;line-height:1}
+.card-id dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:.95rem}
+.card-id dt{color:var(--muted)}
+.card-id dd{margin:0;text-align:right}
+.moved{background:var(--blush);color:var(--fg);border-radius:12px;padding:10px 14px;font-size:.9rem}
+
+section{padding-block:80px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.head p{color:var(--muted);max-width:44ch}
+
+.looks{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.look{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:10px;transition:transform .25s ease}
+.look:hover{transform:translateY(-4px)}
+.look h3{font-size:1.35rem}
+.look .price{font-family:var(--display);font-size:1.9rem;color:var(--rouge)}
+.look p{color:var(--muted);font-size:.9rem;font-style:italic}
+.addons{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
+.chip{border:1px dashed var(--rouge);border-radius:999px;padding:8px 16px;font-size:.92rem}
+.chip b{color:var(--rouge);font-weight:600}
+
+.menu{max-width:720px}
+.item{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:baseline;padding-block:14px;border-bottom:1px solid var(--line);font-size:1.05rem}
+.item span:last-child{font-family:var(--display);font-size:1.25rem;color:var(--rouge);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.learn{background:var(--paper);border-block:1px solid var(--line)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tier{border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px;background:var(--bg)}
+.tier.feature{border-color:var(--rouge);box-shadow:0 0 0 1px var(--rouge)}
+.tier .price{font-family:var(--display);font-size:2.2rem;color:var(--rouge)}
+.tier p{color:var(--muted)}
+.pro{margin-top:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:22px}
+.pro b{font-family:var(--display);font-size:1.4rem;color:var(--rouge)}
+.fine{margin-top:16px;color:var(--muted);font-size:.9rem;font-style:italic}
+
+.visit .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.contact{display:flex;flex-direction:column;gap:20px}
+.contact .v{font-size:1.1rem}
+.cta{background:var(--fg);color:var(--bg);border-radius:28px;padding:36px;display:flex;flex-direction:column;gap:18px;justify-content:center}
+.cta .label{color:var(--blush)}
+.cta .btn{align-self:flex-start}
+footer .wrap{border-top:1px solid var(--line);padding-block:26px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:.86rem}
+
+@media (max-width:860px){.looks{grid-template-columns:1fr 1fr}}
+@media (max-width:780px){
+  .hero .wrap,.visit .wrap{grid-template-columns:1fr;gap:36px}
+  .tiers{grid-template-columns:1fr}
+  section{padding-block:56px}
+  nav{display:none}
+}
+@media (max-width:460px){.looks{grid-template-columns:1fr}}
+
+@media (prefers-reduced-motion:no-preference){
+  html{scroll-behavior:smooth}
+  .swash path{stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.3s cubic-bezier(.6,.1,.2,1) .7s forwards}
+  .hero-copy > *{animation:rise .8s ease-out both}
+  .hero-copy > *:nth-child(2){animation-delay:.1s}
+  .hero-copy > *:nth-child(3){animation-delay:.35s}
+  .hero-copy > *:nth-child(4){animation-delay:.5s}
+  .card-id{animation:rise .9s ease-out .6s both}
+  .js .reveal{opacity:.15;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .js .reveal.in{opacity:1;transform:none}
+}
+@media (prefers-reduced-motion:reduce){.btn:hover,.look:hover{transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="logo" href="#top">nadi.mua</a>
+  <nav><a href="#makeup">Макіяж</a><a href="#brows">Брови та вії</a><a href="#learn">Навчання</a><a href="#visit">Контакти</a></nav>
+  <a class="btn" href="https://t.me/nadi_mua" target="_blank" rel="noopener">Записатися</a>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+  <div class="hero-copy">
+    <span class="label">Візажист · брови · ламі вій · Дніпро, центр</span>
+    <h1>Макіяж, який тримається <span class="swash">весь день<svg viewBox="0 0 300 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 28 C 70 6, 150 38, 294 12" fill="none" stroke="var(--blush)" stroke-width="12" stroke-linecap="round"/></svg></span></h1>
+    <p class="lead">Надія Хуторна — візажистка і бровистка. Денний, весільний та арт-макіяж, ламінування брів і вій, уроки макіяжу для себе та навчання з нуля.</p>
+    <div class="actions">
+      <a class="btn" href="https://t.me/nadi_mua" target="_blank" rel="noopener">Записатися в Telegram</a>
+      <a class="btn ghost" href="#makeup">Ціни</a>
+    </div>
+  </div>
+  <aside class="card-id" aria-label="Коротко">
+    <span class="label">Студія в центрі</span>
+    <span class="big">вул. Барикадна, 1</span>
+    <p class="moved">Нова адреса: 3 поверх, є ліфт</p>
+    <dl>
+      <dt>Google</dt><dd>5.0 ★ · 42 відгуки</dd>
+      <dt>Макіяж</dt><dd>від 1 000 ₴</dd>
+      <dt>Урок для себе</dt><dd>1 800 ₴</dd>
+    </dl>
+  </aside>
+</div></div>
+
+<section id="makeup"><div class="wrap">
+  <div class="head"><h2>Макіяж</h2><p>Для зйомки, події чи весілля. Ранок, коли треба бути готовою о 7:00, теж можна.</p></div>
+  <div class="looks">
+    <div class="look"><span class="label">Легкий</span><h3>Денний</h3><span class="price">1 000 ₴</span><p>Акцент на шкіру, легкий макіяж очей</p></div>
+    <div class="look"><span class="label">Класика</span><h3>Макіяж</h3><span class="price">1 200 ₴</span><p>На подію, фотосесію чи вечір</p></div>
+    <div class="look"><span class="label">Особливий день</span><h3>Весільний</h3><span class="price">1 500 ₴</span><p>Витримає сміх, сльози і спеку</p></div>
+    <div class="look"><span class="label">Креатив</span><h3>Арт-макіяж</h3><span class="price">1 500 ₴</span><p>Колір, графіка, стрази, пір'я</p></div>
+  </div>
+  <div class="addons">
+    <span class="chip">Виїзд до вас <b>+500 ₴</b> + таксі в обидва боки</span>
+    <span class="chip">Ранній макіяж на студії, до 8:00 <b>+300 ₴</b></span>
+  </div>
+</div></section>
+
+<section id="brows" style="padding-top:0"><div class="wrap">
+  <div class="head"><h2>Брови та вії</h2></div>
+  <div class="menu">
+    <div class="item"><span>Корекція + фарбування брів</span><span>600 ₴</span></div>
+    <div class="item"><span>Ламінування брів</span><span>800 ₴</span></div>
+    <div class="item"><span>Ламінування вій</span><span>900 ₴</span></div>
+    <div class="item"><span>Комплекс: ламі вій + ламі брів</span><span>1 500 ₴</span></div>
+    <div class="item"><span>Фарбування вій</span><span>150 ₴</span></div>
+    <div class="item"><span>Депіляція воском</span><span>150 ₴</span></div>
+  </div>
+</div></section>
+
+<section id="learn" class="learn"><div class="wrap">
+  <div class="head"><h2>Навчання</h2><p>Не вмієш фарбуватись? Приходь, навчу. Заняття індивідуальні, усі матеріали та моделі надаються.</p></div>
+  <div class="tiers">
+    <div class="tier"><span class="label">Для себе</span><h3>Урок макіяжу</h3><span class="price">1 800 ₴</span><p>Базове заняття 3 години: теорія і практика.</p></div>
+    <div class="tier feature"><span class="label">Найкращий результат</span><h3>Курс уроків</h3><span class="price">5 000 ₴</span><p>3 заняття по 2,5 години, щоб впевнено робити макіяж самій.</p></div>
+    <div class="tier"><span class="label">Після курсу</span><h3>Додатковий урок</h3><span class="price">1 500 ₴</span><p>Закріпити навички або розібрати новий образ.</p></div>
+  </div>
+  <div class="pro">
+    <div><span class="label">Для майстрів</span><h3 style="margin-top:6px">Підвищення кваліфікації</h3><p style="color:var(--muted);margin-top:6px">А також базовий курс «Візажист» — стань професіоналом з нуля.</p></div>
+    <b>50 $</b>
+  </div>
+  <p class="fine">Деталі навчання — у Direct чи Telegram. Заняття за попереднім записом.</p>
+</div></section>
+
+<section id="visit" class="visit"><div class="wrap">
+  <div class="contact">
+    <h2>Як знайти</h2>
+    <div><span class="label">Адреса</span><p class="v">вул. Барикадна, 1, 3 поверх (є ліфт)<br>Дніпро, центр</p></div>
+    <div><span class="label">Телефон</span><p class="v">098 071 78 12</p></div>
+    <div><span class="label">Instagram</span><p class="v"><a href="https://www.instagram.com/nadi.mua/" target="_blank" rel="noopener">@nadi.mua</a></p></div>
+    <div><a class="btn ghost" href="https://www.google.com/maps/search/?api=1&query=вул.+Барикадна+1+Дніпро" target="_blank" rel="noopener">Відкрити на мапі</a></div>
+  </div>
+  <div class="cta">
+    <span class="label">Запис</span>
+    <h2>Напишіть, на коли потрібен образ</h2>
+    <p>Підберемо час, а для весілля чи раннього ранку — заздалегідь.</p>
+    <a class="btn" href="https://t.me/nadi_mua" target="_blank" rel="noopener">Написати в Telegram</a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span>Надія Хуторна · nadi.mua</span><span>Концепт сайту · фото робіт додаються після погодження</span></div></footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) return;
+  document.documentElement.classList.add('js');
+  var els = document.querySelectorAll('section .head, .look, .addons, .menu, .tier, .pro, .contact, .cta');
+  els.forEach(function(el){
+    el.classList.add('reveal');
+    if (el.classList.contains('look') || el.classList.contains('tier')) {
+      var i = Array.prototype.indexOf.call(el.parentElement.children, el);
+      el.style.transitionDelay = (i * 0.1) + 's';
+    }
+  });
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.12});
+  els.forEach(function(el){ io.observe(el); });
+  setTimeout(function(){ els.forEach(function(el){ el.classList.add('in'); }); }, 4000);
+})();
+</script>
+</body>
+</html>
